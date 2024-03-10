@@ -1,2 +1,2 @@
-# Sandbox---Python
+# Sandbox---Streamlit
 Study
