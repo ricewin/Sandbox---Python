@@ -1,6 +1,6 @@
-import streamlit as st
-import pandas as pd
 import numpy as np
+import pandas as pd
+import streamlit as st
 
 st.title("30 Days of Streamlit")
 st.markdown("### Day 9")

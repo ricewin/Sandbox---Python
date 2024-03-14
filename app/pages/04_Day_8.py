@@ -1,5 +1,6 @@
+from datetime import datetime, time
+
 import streamlit as st
-from datetime import time, datetime
 
 st.title("30 Days of Streamlit")
 st.markdown("### Day 8")
