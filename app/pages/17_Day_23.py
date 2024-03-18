@@ -17,7 +17,7 @@ st.markdown(
 In the above URL bar of your internet browser, append the following:
 `?firstname=Jack&surname=Beanstalk`
 after the base URL `http://share.streamlit.io/dataprofessor/st.experimental_get_query_params/`
-such that it becomes 
+such that it becomes
 `http://share.streamlit.io/dataprofessor/st.experimental_get_query_params/?firstname=Jack&surname=Beanstalk`
 """
 )
