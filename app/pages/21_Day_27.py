@@ -4,16 +4,7 @@ import json
 from pathlib import Path
 
 import streamlit as st
-from streamlit_elements import (
-    dashboard,
-    editor,
-    elements,
-    lazy,
-    media,
-    mui,
-    nivo,
-    sync,
-)
+from streamlit_elements import dashboard, editor, elements, lazy, media, mui, nivo, sync
 
 # As for Streamlit Elements, we will need all these objects.
 # All available objects and there usage are listed there: https://github.com/okld/streamlit-elements#getting-started
@@ -26,9 +17,7 @@ st.set_page_config(layout="wide")
 with st.sidebar:
     st.title("🗓️ #30DaysOfStreamlit")
     st.header("Day 27 - Streamlit Elements")
-    st.write(
-        "Build a draggable and resizable dashboard with Streamlit Elements."
-    )
+    st.write("Build a draggable and resizable dashboard with Streamlit Elements.")
     st.write("---")
 
     # Define URL for media player.
@@ -64,7 +53,7 @@ layout = [
 
 # Create a frame to display elements.
 
-with elements("demo"):
+with elements("demo"): # type: ignore
 
     # Create a new dashboard with the layout specified above.
     #
@@ -89,9 +78,7 @@ with elements("demo"):
         # https://mui.com/system/flexbox/
         # https://mui.com/system/the-sx-prop/
 
-        with mui.Card(
-            key="editor", sx={"display": "flex", "flexDirection": "column"}
-        ):
+        with mui.Card(key="editor", sx={"display": "flex", "flexDirection": "column"}):
 
             # To make this header draggable, we just need to set its classname to 'draggable',
             # as defined above in dashboard.Grid's draggableHandle.
@@ -144,7 +131,7 @@ with elements("demo"):
                 editor.Monaco(
                     defaultValue=st.session_state.data,
                     language="json",
-                    onChange=lazy(sync("data")),
+                    onChange=lazy(sync("data")), # type: ignore
                 )
 
             with mui.CardActions:
@@ -165,9 +152,7 @@ with elements("demo"):
         # Second card, the Nivo Bump chart.
         # We will use the same flexbox configuration as the first card to auto adjust the content height.
 
-        with mui.Card(
-            key="chart", sx={"display": "flex", "flexDirection": "column"}
-        ):
+        with mui.Card(key="chart", sx={"display": "flex", "flexDirection": "column"}):
 
             # To make this header draggable, we just need to set its classname to 'draggable',
             # as defined above in dashboard.Grid's draggableHandle.
@@ -234,15 +219,11 @@ with elements("demo"):
 
         # Third element of the dashboard, the Media player.
 
-        with mui.Card(
-            key="media", sx={"display": "flex", "flexDirection": "column"}
-        ):
+        with mui.Card(key="media", sx={"display": "flex", "flexDirection": "column"}):
             mui.CardHeader(title="Media Player", className="draggable")
             with mui.CardContent(sx={"flex": 1, "minHeight": 0}):
 
                 # This element is powered by ReactPlayer, it supports many more players other
                 # than YouTube. You can check it out there: https://github.com/cookpete/react-player#props
 
-                media.Player(
-                    url=media_url, width="100%", height="100%", controls=True
-                )
+                media.Player(url=media_url, width="100%", height="100%", controls=True)
