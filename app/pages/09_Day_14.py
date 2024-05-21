@@ -12,5 +12,5 @@ df = pd.read_csv(
     "https://raw.githubusercontent.com/dataprofessor/data/master/penguins_cleaned.csv"
 )
 
-pr = df.profile_report() # type: ignore
+pr = df.profile_report()  # type: ignore
 st_profile_report(pr)
