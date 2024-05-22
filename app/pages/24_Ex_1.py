@@ -6,29 +6,28 @@ from dateutil.relativedelta import relativedelta
 st.title("確認用")
 st.header("日付リスト生成", divider="rainbow")
 
-col1, col2, col3 = st.columns(3)
+position = st.radio(
+    "基準月を選択",
+    [0, 1, 2, 3],
+    captions=["当月", "1月前", "2月前", "3月前"],
+    horizontal=True,
+)
 
-with col1:
-    position = st.radio(
-        "基準月を選択",
-        [0, 1, 2, 3, 4, 5, 6, 7],
-        horizontal=True,
-    )
+past_future = st.radio(
+    "過去・未来",
+    ["過去", "未来"],
+    horizontal=True,
+)
 
-with col2:
-    date_span = st.radio(
-        "日付を作成する期間を選択",
-        [6, 12, 18, 24, 48, 60, 72],
-        horizontal=True,
-    )
+date_span = st.radio(
+    "日付を作成する期間を選択",
+    [6, 12, 18, 24, 48, 60],
+    format_func=lambda x: f"{x} か月",
+    captions=["半年", "1年", "1年半", "2年", "4年", "5年"],
+    horizontal=True,
+)
 
-with col3:
-    past_future = st.radio(
-        "過去・未来",
-        ["過去", "未来"],
-        horizontal=True,
-    )
-
+st.write(f"{past_future} {date_span} か月分を取得します。")
 
 # 基準月をセット
 start_date = datetime.now() - relativedelta(months=position)
