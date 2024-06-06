@@ -53,7 +53,7 @@ layout = [
 
 # Create a frame to display elements.
 
-with elements("demo"): # type: ignore
+with elements("demo"):  # type: ignore
 
     # Create a new dashboard with the layout specified above.
     #
@@ -131,7 +131,7 @@ with elements("demo"): # type: ignore
                 editor.Monaco(
                     defaultValue=st.session_state.data,
                     language="json",
-                    onChange=lazy(sync("data")), # type: ignore
+                    onChange=lazy(sync("data")),  # type: ignore
                 )
 
             with mui.CardActions:
