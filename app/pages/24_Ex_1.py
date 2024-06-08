@@ -9,7 +9,7 @@ st.header("日付リスト生成", divider="rainbow")
 position = st.radio(
     "基準月を選択",
     [0, 1, 2, 3],
-    captions=["当月", "1月前", "2月前", "3月前"],
+    captions=["当月", "1 月前", "2 月前", "3 月前"],
     horizontal=True,
 )
 
@@ -21,13 +21,13 @@ past_future = st.radio(
 
 date_span = st.radio(
     "日付を作成する期間を選択",
-    [6, 12, 18, 24, 48, 60],
+    [6, 12, 24, 48, 60],
     format_func=lambda x: f"{x} か月",
-    captions=["半年", "1年", "1年半", "2年", "4年", "5年"],
+    captions=["半年", "1 年", "2 年", "4 年", "5 年"],
     horizontal=True,
 )
 
-st.write(f"{past_future} {date_span} か月分を取得します。")
+st.write(f"{past_future} {date_span} か月分を生成します。")
 
 # 基準月をセット
 start_date = datetime.now() - relativedelta(months=position)
