@@ -1,31 +1,31 @@
+from typing import Any, Coroutine
 import folium
 import streamlit as st
 from geopy.geocoders import Nominatim
 from streamlit_folium import st_folium
 
 
-def GetAddress(landmark: str):
+def GetAddress(landmark: str) -> Coroutine[Any, Any, Any | None] | Any | None:
     geolocator = Nominatim(user_agent="anonymous")
     g = geolocator.geocode(landmark)
     return g
 
 
 # 検索する名称
-landmark = st.text_input("Destination")
+landmark: str = st.text_input("Find a location")
 
-location = GetAddress(landmark)
-
+location: Coroutine[Any, Any, Any | None] | Any | None = GetAddress(landmark)
 
 if location is None:
     st.snow()
     st.write("No maps.")
 else:
     with st.expander("Raw data."):
-        st.write(location.raw)
+        st.write(location.raw)  # type: ignore
 
-    address = location.address
-    latitude = location.latitude
-    longitude = location.longitude
+    address = location.address  # type: ignore
+    latitude = location.latitude  # type: ignore
+    longitude = location.longitude  # type: ignore
     st.write("住所:", address)
     st.write("緯度:", latitude)
     st.write("経度:", longitude)
