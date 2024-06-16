@@ -31,7 +31,6 @@ if upload_file is not None:
             st.info(
                 "緯度・経度のあるカラム名を「緯度」「経度」に書き換えて実行すると、マップ表示ができます。"
             )
-
             st.write(data)
 
             # カラム名の編集フィールドを作成する
@@ -42,6 +41,8 @@ if upload_file is not None:
 
             # 新しいカラム名を適用する
             data.columns = new_columns
+
+    heatmap = st.toggle("HeatMap")
 
     if st.button(":mag_right: 実行"):
         try:
@@ -64,20 +65,38 @@ if upload_file is not None:
         st.write(f"有効件数: {len(df)} / {len(data)}")
 
         # マップを作成
-        map = folium.Map(location=map_center, zoom_start=8)
+        map = folium.Map(
+            location=map_center,
+            tiles="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+            attr="国土地理院",
+            zoom_start=8,
+        )
 
         # ピンをグループ化するマーカーグループクラスタを作成
         marker_cluster: MarkerCluster = MarkerCluster().add_to(map)
 
         # データフレームの各行に対して、ピンを作成してマップに追加
         for index, row in df.iterrows():
+            pop = f"""{row["緯度"]} {row["経度"]}"""
+
             folium.Marker(
                 location=[row["緯度"], row["経度"]],
-                icon=folium.Icon(color="blue"),
+                popup=pop,
+                icon=folium.Icon(icon="home", icon_color="white", color="red"),
             ).add_to(marker_cluster)
 
-        # ヒートマップ表示を追加
-        coordinates: Any = df[["緯度", "経度"]].values.tolist()
-        HeatMap(coordinates).add_to(marker_cluster)
+        if heatmap:
+            # ヒートマップ表示を追加
+            coordinates: Any = df[["緯度", "経度"]].values.tolist()
+            HeatMap(coordinates).add_to(map)
 
         st_folium(map, use_container_width=True, returned_objects=[])
+
+        st.info(
+            """
+            ```
+            地理院タイルにデータを追記して作成
+            出典: 国土地理院 https://maps.gsi.go.jp/development/ichiran.html
+            ```
+            """
+        )
