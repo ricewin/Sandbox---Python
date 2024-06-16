@@ -17,7 +17,7 @@ landmark: str = st.text_input("Find a location")
 location: Coroutine[Any, Any, Any | None] | Any | None = GetAddress(landmark)
 
 if location is None:
-    st.snow()
+    # st.snow()
     st.write("No maps.")
 else:
     with st.expander("Raw data."):

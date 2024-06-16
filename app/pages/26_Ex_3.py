@@ -34,10 +34,9 @@ if upload_file is not None:
             st.write(data)
 
             # カラム名の編集フィールドを作成する
-            new_columns: list[Any] = []
-            for col in data.columns:
-                new_col: str = st.text_input(f"{col} の新しい名前", value=col)
-                new_columns.append(new_col)
+            new_columns = [
+                st.text_input(f"{col} の新しい名前", value=col) for col in data.columns
+            ]
 
             # 新しいカラム名を適用する
             data.columns = new_columns
