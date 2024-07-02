@@ -40,17 +40,17 @@ if upload_file is not None:
 
 col1, col2, col3 = st.columns(3)
 with col1:
-    pinmap = st.toggle(
+    pin_map: bool = st.toggle(
         "ピン", value=True, help="オフにすると描画処理が高速化されます。"
     )
 
 with col2:
-    heatmap = st.toggle(
+    heat_map: bool = st.toggle(
         "HeatMap", value=True, help="オフにしても描画処理はあまり変わらないと思います。"
     )
 
 with col3:
-    mapstyle = st.radio(
+    map_style: str | None = st.radio(
         "地図のスタイル",
         options=["標準", "淡色"],
         index=1,
@@ -58,10 +58,10 @@ with col3:
         help="淡色がおすすめ",
     )
 
-if mapstyle == "標準":
-    maptile = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
+if map_style == "標準":
+    map_tile = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
 else:
-    maptile = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
+    map_tile = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
 
 if st.button(":mag_right: 実行"):
     try:
@@ -86,12 +86,12 @@ if st.button(":mag_right: 実行"):
     # マップを作成
     map = folium.Map(
         location=map_center,
-        tiles=maptile,
-        attr="""<a href="https://maps.gsi.go.jp/">国土地理院</a>""",
+        tiles=map_tile,
+        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
         zoom_start=8,
     )
 
-    if pinmap:
+    if pin_map:
         # ピンをグループ化するマーカーグループクラスタを作成
         lightblue = MarkerCluster(name="負傷のみ").add_to(map)
         pink = MarkerCluster(name="単体死亡").add_to(map)
@@ -106,9 +106,9 @@ if st.button(":mag_right: 実行"):
             ).add_to(mymap)
 
         for index, row in df.iterrows():
-            count = row["死者数"]
+            count: Any = row["死者数"]
 
-            tip = f"""
+            tip: str = f"""
                 発生日時: {row["発生日時"]}<br />
                 天候: {row["天候"]}<br />
                 路面状態: {row["路面状態"]}<br />
@@ -129,9 +129,9 @@ if st.button(":mag_right: 実行"):
         pink.add_to(map)
         red.add_to(map)
 
-    if heatmap:
+    if heat_map:
         heatmap_group = folium.FeatureGroup(name="ヒートマップ")
-        coordinates = df[["緯度", "経度"]].values.tolist()
+        coordinates: Any = df[["緯度", "経度"]].values.tolist()
         HeatMap(coordinates).add_to(heatmap_group)
         heatmap_group.add_to(map)
 

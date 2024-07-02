@@ -33,15 +33,12 @@ if upload_file is not None:
             )
             st.write(data)
 
-            # カラム名の編集フィールドを作成する
-            new_columns = [
+            # 新しいカラム名を適用する
+            data.columns = [
                 st.text_input(f"{col} の新しい名前", value=col) for col in data.columns
             ]
 
-            # 新しいカラム名を適用する
-            data.columns = new_columns
-
-    heatmap = st.toggle("HeatMap")
+    heat_map: bool = st.toggle("HeatMap")
 
     if st.button(":mag_right: 実行"):
         try:
@@ -67,7 +64,7 @@ if upload_file is not None:
         map = folium.Map(
             location=map_center,
             tiles="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
-            attr="国土地理院",
+            attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
             zoom_start=8,
         )
 
@@ -76,7 +73,7 @@ if upload_file is not None:
 
         # データフレームの各行に対して、ピンを作成してマップに追加
         for index, row in df.iterrows():
-            pop = f"""{row["緯度"]} {row["経度"]}"""
+            pop: str = f"""{row["緯度"]} {row["経度"]}"""
 
             folium.Marker(
                 location=[row["緯度"], row["経度"]],
@@ -84,7 +81,7 @@ if upload_file is not None:
                 icon=folium.Icon(icon="home", icon_color="white", color="red"),
             ).add_to(marker_cluster)
 
-        if heatmap:
+        if heat_map:
             # ヒートマップ表示を追加
             coordinates: Any = df[["緯度", "経度"]].values.tolist()
             HeatMap(coordinates).add_to(map)
