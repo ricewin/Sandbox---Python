@@ -63,7 +63,7 @@ if map_style == "標準":
 else:
     map_tile = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
 
-if st.button(":mag_right: 実行"):
+if st.button(":mag_right: 実行", type="primary"):
     try:
         # 位置情報のないレコードをドロップ
         df: pd.DataFrame = data.dropna(subset=["緯度", "経度"])
@@ -83,47 +83,48 @@ if st.button(":mag_right: 実行"):
 
     st.write(f"有効件数: {len(df)} / {len(data)}")
 
-    # マップを作成
-    map = folium.Map(
-        location=map_center,
-        tiles=map_tile,
-        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
-        zoom_start=8,
-    )
+    with st.spinner("Cluster Making..."):
+        # マップを作成
+        map = folium.Map(
+            location=map_center,
+            tiles=map_tile,
+            attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
+            zoom_start=8,
+        )
 
-    if pin_map:
-        # ピンをグループ化するマーカーグループクラスタを作成
-        lightblue = MarkerCluster(name="負傷のみ").add_to(map)
-        pink = MarkerCluster(name="単体死亡").add_to(map)
-        red = MarkerCluster(name="複数死亡").add_to(map)
+        if pin_map:
+            # ピンをグループ化するマーカーグループクラスタを作成
+            lightblue = MarkerCluster(name="負傷のみ").add_to(map)
+            pink = MarkerCluster(name="単体死亡").add_to(map)
+            red = MarkerCluster(name="複数死亡").add_to(map)
 
-        # データフレームの各行に対して、ピンを作成してマップに追加
-        def add_marker(location, color, tooltip, mymap) -> None:
-            folium.Marker(
-                location=location,
-                icon=folium.Icon(icon="home", icon_color="white", color=color),
-                tooltip=tooltip,
-            ).add_to(mymap)
+            # データフレームの各行に対して、ピンを作成してマップに追加
+            def add_marker(location, color, tooltip, mymap) -> None:
+                folium.Marker(
+                    location=location,
+                    icon=folium.Icon(icon="home", icon_color="white", color=color),
+                    tooltip=tooltip,
+                ).add_to(mymap)
 
-        for index, row in df.iterrows():
-            count: Any = row["死者数"]
+            for index, row in df.iterrows():
+                count: Any = row["死者数"]
 
-            tip: str = f"""
-                発生日時: {row["発生日時"]}<br />
-                天候: {row["天候"]}<br />
-                路面状態: {row["路面状態"]}<br />
-                当事者A: {row["車両の損壊程度（当事者A）"]}<br />
-                当事者B: {row["車両の損壊程度（当事者B）"]}<br />
-                負傷者数: {row["負傷者数"]} 人,
-                死者数: {count} 人
-            """
+                tip: str = f"""
+                    発生日時: {row["発生日時"]}<br />
+                    天候: {row["天候"]}<br />
+                    路面状態: {row["路面状態"]}<br />
+                    当事者A: {row["車両の損壊程度（当事者A）"]}<br />
+                    当事者B: {row["車両の損壊程度（当事者B）"]}<br />
+                    負傷者数: {row["負傷者数"]} 人,
+                    死者数: {count} 人
+                """
 
-            if count == 0:
-                add_marker([row["緯度"], row["経度"]], "lightblue", tip, lightblue)
-            elif count < 2:
-                add_marker([row["緯度"], row["経度"]], "pink", tip, pink)
-            else:
-                add_marker([row["緯度"], row["経度"]], "red", tip, red)
+                if count == 0:
+                    add_marker([row["緯度"], row["経度"]], "lightblue", tip, lightblue)
+                elif count < 2:
+                    add_marker([row["緯度"], row["経度"]], "pink", tip, pink)
+                else:
+                    add_marker([row["緯度"], row["経度"]], "red", tip, red)
 
         lightblue.add_to(map)
         pink.add_to(map)
@@ -136,7 +137,8 @@ if st.button(":mag_right: 実行"):
         heatmap_group.add_to(map)
 
     folium.LayerControl().add_to(map)
-    st_folium(map, use_container_width=True, returned_objects=[])
+    with st.spinner("Map Making..."):
+        st_folium(map, use_container_width=True, returned_objects=[])
 
     st.info(
         """
