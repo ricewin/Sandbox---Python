@@ -19,8 +19,7 @@ def get_address(symbol: str) -> Coroutine[Any, Any, Any | None] | Any | None:
         Coroutine[Any, Any, Any | None] | Any | None: location
     """
     geolocator = Nominatim(user_agent="anonymous")
-    g = geolocator.geocode(symbol)
-    return g
+    return geolocator.geocode(symbol)
 
 
 # 検索する名称
