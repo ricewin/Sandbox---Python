@@ -1,3 +1,5 @@
+"""A module that provides the ability to search for the location of landmarks."""
+
 from typing import Any, Coroutine
 
 import folium
@@ -6,7 +8,7 @@ from geopy.geocoders import Nominatim
 from streamlit_folium import st_folium
 
 
-def GetAddress(landmark: str) -> Coroutine[Any, Any, Any | None] | Any | None:
+def get_address(symbol: str) -> Coroutine[Any, Any, Any | None] | Any | None:
     """
     Get Address
 
@@ -17,14 +19,14 @@ def GetAddress(landmark: str) -> Coroutine[Any, Any, Any | None] | Any | None:
         Coroutine[Any, Any, Any | None] | Any | None: location
     """
     geolocator = Nominatim(user_agent="anonymous")
-    g = geolocator.geocode(landmark)
+    g = geolocator.geocode(symbol)
     return g
 
 
 # 検索する名称
 landmark: str = st.text_input("Find a location")
 
-location: Coroutine[Any, Any, Any | None] | Any | None = GetAddress(landmark)
+location: Coroutine[Any, Any, Any | None] | Any | None = get_address(landmark)
 
 if location is None:
     # st.snow()
