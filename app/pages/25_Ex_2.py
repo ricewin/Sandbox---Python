@@ -1,4 +1,5 @@
 from typing import Any, Coroutine
+
 import folium
 import streamlit as st
 from geopy.geocoders import Nominatim
@@ -6,6 +7,15 @@ from streamlit_folium import st_folium
 
 
 def GetAddress(landmark: str) -> Coroutine[Any, Any, Any | None] | Any | None:
+    """
+    Get Address
+
+    Args:
+        landmark (str): Symbol
+
+    Returns:
+        Coroutine[Any, Any, Any | None] | Any | None: location
+    """
     geolocator = Nominatim(user_agent="anonymous")
     g = geolocator.geocode(landmark)
     return g
