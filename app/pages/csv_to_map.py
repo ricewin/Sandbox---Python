@@ -44,14 +44,14 @@ from streamlit_folium import st_folium
 
 
 @st.cache_data
-def get_data(csv_file: UploadedFile) -> pd.DataFrame | None:
+def get_data(csv_file: UploadedFile) -> pd.DataFrame:
     """Read CSV file
 
     Args:
-        csv_file (UploadedFile): _description_
+        csv_file (UploadedFile): Up file
 
     Returns:
-        pd.DataFrame | None: _description_
+        pd.DataFrame: DataFrame
     """
     try:
         df: pd.DataFrame = pd.read_csv(csv_file)
@@ -63,14 +63,16 @@ def get_data(csv_file: UploadedFile) -> pd.DataFrame | None:
     return df
 
 
-def add_marker(location, color, tooltip, mymap) -> None:
+def add_marker(
+    location: list[float], color: str, tooltip: str, mymap: MarkerCluster
+) -> None:
     """Add markers by grouping
 
     Args:
-        location (_type_): _description_
-        color (_type_): _description_
-        tooltip (_type_): _description_
-        mymap (_type_): _description_
+        location (list[float]): Geocode
+        color (str): Pin color
+        tooltip (str): Tip
+        mymap (MakerCluster): Pin map
     """
     folium.Marker(
         location=location,
@@ -90,11 +92,7 @@ st.subheader(
 upload_file: UploadedFile | None = st.file_uploader("Choose a file")
 
 if upload_file is not None:
-    data = get_data(upload_file)
-
-    if data is None:
-        st.error("Data unknown.")
-        st.stop()
+    data: pd.DataFrame = get_data(upload_file)
 
     if "緯度" in data.columns and "経度" in data.columns:
         st.info("実行ボタンをクリックするとマップを表示します。")
@@ -118,7 +116,7 @@ with col1:
 
 with col2:
     heat_map: bool = st.toggle(
-        "HeatMap", value=True, help="オフにしても描画処理は変わりません。"
+        "ヒートマップ", value=True, help="オフにしても描画処理は変わりません。"
     )
 
 with col3:
@@ -136,6 +134,7 @@ else:
     map_tile = "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
 
 if upload_file is None:
+    st.info("ファイルの読み込み後に地図を作成できます。")
     st.stop()
 
 if st.button(":mag_right: 実行", type="primary"):
@@ -158,16 +157,16 @@ if st.button(":mag_right: 実行", type="primary"):
 
     st.write(f"有効件数: {len(df)} / {len(data)}")
 
-    with st.spinner("Cluster Making..."):
-        # マップを作成
-        m = folium.Map(
-            location=map_center,
-            tiles=map_tile,
-            attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
-            zoom_start=8,
-        )
+    # マップを作成
+    m = folium.Map(
+        location=map_center,
+        tiles=map_tile,
+        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
+        zoom_start=8,
+    )
 
-        if pin_map:
+    if pin_map:
+        with st.spinner("Cluster Making..."):
             try:
                 # ピンをグループ化するマーカーグループクラスタを作成
                 lightblue = MarkerCluster(name="負傷のみ")
@@ -188,7 +187,9 @@ if st.button(":mag_right: 実行", type="primary"):
                     """
 
                     if count == 0:
-                        add_marker([row["緯度"], row["経度"]], "lightblue", tip, lightblue)
+                        add_marker(
+                            [row["緯度"], row["経度"]], "lightblue", tip, lightblue
+                        )
                     elif count == 1:
                         add_marker([row["緯度"], row["経度"]], "pink", tip, pink)
                     else:
@@ -207,9 +208,9 @@ if st.button(":mag_right: 実行", type="primary"):
         HeatMap(coordinates).add_to(heatmap_group)
         heatmap_group.add_to(m)
 
-    folium.plugins.Geocoder(position="topleft", collapsed=True).add_to(m)
+    folium.plugins.Geocoder(position="topleft", collapsed=True).add_to(m)  # type: ignore
 
-    folium.plugins.Fullscreen(
+    folium.plugins.Fullscreen(  # type: ignore
         position="topleft",
         title="Expand me",
         title_cancel="Exit me",
