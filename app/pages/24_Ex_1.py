@@ -6,20 +6,20 @@ from dateutil.relativedelta import relativedelta
 st.title("確認用")
 st.header("日付リスト生成", divider="rainbow")
 
-position = st.radio(
+position: int | None = st.radio(
     "基準月を選択",
     [0, 1, 2, 3],
     captions=["当月", "1 月前", "2 月前", "3 月前"],
     horizontal=True,
 )
 
-past_future = st.radio(
+past_future: str | None = st.radio(
     "過去・未来",
     ["過去", "未来"],
     horizontal=True,
 )
 
-date_span = st.radio(
+date_span: int | None = st.radio(
     "日付を作成する期間を選択",
     [6, 12, 24, 48, 60],
     format_func=lambda x: f"{x} か月",
@@ -30,12 +30,12 @@ date_span = st.radio(
 st.write(f"{past_future} {date_span} か月分を生成します。")
 
 # 基準月をセット
-start_date = datetime.now() - relativedelta(months=position)
+start_date: datetime = datetime.now() - relativedelta(months=position)
 
 # 降順でリストにする
-dates = [start_date - relativedelta(months=i) for i in range(date_span)]  # type: ignore
+dates: list[datetime] = [start_date - relativedelta(months=i) for i in range(date_span)]  # type: ignore
 
-selected_month = st.selectbox(
+selected_month: datetime | None = st.selectbox(
     "抽出したい利用年月を選んでください",
     options=dates,
     format_func=lambda x: f"{x.strftime('%Y年%m月')}",
