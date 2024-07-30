@@ -9,14 +9,13 @@ from streamlit_folium import st_folium
 
 
 def get_address(symbol: str) -> Coroutine[Any, Any, Any | None] | Any | None:
-    """
-    Get Address
+    """Get Address
 
     Args:
-        landmark (str): Symbol
+        symbol (str): location
 
     Returns:
-        Coroutine[Any, Any, Any | None] | Any | None: location
+        Coroutine[Any, Any, Any | None] | Any | None: address
     """
     geolocator = Nominatim(user_agent="anonymous")
     return geolocator.geocode(symbol)
