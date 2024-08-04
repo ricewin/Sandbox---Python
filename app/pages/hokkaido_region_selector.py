@@ -1,6 +1,13 @@
 import pandas as pd
 import streamlit as st
 
+
+@st.cache_data
+def _load_region() -> pd.DataFrame:
+    # CSV ファイルを読み込む
+    return pd.read_csv("./static/hokkaido_regionname_master.csv")
+
+
 # Streamlit アプリのタイトル
 st.title("City to Region of Hokkaido")
 
@@ -12,7 +19,7 @@ st.title("City to Region of Hokkaido")
 # ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 
 # CSV ファイルを読み込む
-df: pd.DataFrame = pd.read_csv("./static/hokkaido_regionname_master.csv")
+df: pd.DataFrame = _load_region()
 
 # regionname のユニークな値を取得
 hokkaido_regions = df["regionname"].unique()
