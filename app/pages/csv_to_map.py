@@ -94,7 +94,7 @@ upload_file: UploadedFile | None = st.file_uploader("Choose a file")
 if upload_file is not None:
     data: pd.DataFrame = get_data(upload_file)
 
-    if "緯度" in data.columns and "経度" in data.columns:
+    if "lat" in data.columns and "lon" in data.columns:
         st.info("実行ボタンをクリックするとマップを表示します。")
     else:
         with st.expander("データフレームの編集"):

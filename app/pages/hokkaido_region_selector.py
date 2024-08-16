@@ -1,3 +1,4 @@
+from typing import Any
 import pandas as pd
 import streamlit as st
 
@@ -25,7 +26,7 @@ df: pd.DataFrame = _load_region()
 hokkaido_regions = df["regionname"].unique()
 
 # regionname を選択するラジオボタン
-selected_hokkaido_region = st.radio(
+selected_hokkaido_region: Any | None = st.radio(
     "北海道の地域を選択してください",
     hokkaido_regions,
     horizontal=True,
