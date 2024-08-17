@@ -68,23 +68,47 @@ with st.form("my_form"):
     header[2].subheader("Size")
 
     row1: list[DeltaGenerator] = st.columns([1, 2, 2])
-    colorA: str = row1[0].color_picker("Team A", "#0000FF")
+    colorA = row1[0].color_picker("Team A", "#fff0f5")
     opacityA = row1[1].slider("A opacity", 20, 100, 50, label_visibility="hidden")
     sizeA = row1[2].slider("A size", 50, 200, 100, step=10, label_visibility="hidden")
 
     row2: list[DeltaGenerator] = st.columns([1, 2, 2])
-    colorB: str = row2[0].color_picker("Team B", "#FF0000")
-    opacityB = row2[1].slider("B opacity", 20, 100, 50, label_visibility="hidden")
-    sizeB = row2[2].slider("B size", 50, 200, 100, step=10, label_visibility="hidden")
+    colorB = row2[0].color_picker("Team B", "#66cdaa")
+    opacityB = row2[1].slider("B opacity", 20, 100, 55, label_visibility="hidden")
+    sizeB = row2[2].slider("B size", 50, 200, 150, step=10, label_visibility="hidden")
+
+    row3: list[DeltaGenerator] = st.columns([1, 2, 2])
+    colorC = row3[0].color_picker("Team C", "#800000")
+    opacityC = row3[1].slider("C opacity", 20, 100, 60, label_visibility="hidden")
+    sizeC = row3[2].slider("C size", 50, 200, 200, step=10, label_visibility="hidden")
+
+    header: list[DeltaGenerator] = st.columns([2, 3])
+    header[0].subheader("Separate")
+
+    row4: list[DeltaGenerator] = st.columns([2, 3])
+    target = row4[0].selectbox(
+        "Divide into teams",
+        df.columns.to_list(),
+        help="数値でチームを分けます。A: 0, B: 1, C: more",
+    )
 
     st.form_submit_button("Update map")
 
 alphaA = int(opacityA * 255 / 100)
 alphaB = int(opacityB * 255 / 100)
+alphaC = int(opacityC * 255 / 100)
 
 df["color"] = np.where(
-    df.死者数 == 0, colorA + f"{alphaA:02x}", colorB + f"{alphaB:02x}"
+    df[target] == 0,
+    colorA + f"{alphaA:02x}",
+    np.where(df[target] == 1, colorB + f"{alphaB:02x}", colorC + f"{alphaC:02x}"),
 )
-df["size"] = np.where(df.死者数 == 0, sizeA, sizeB)
 
-st.map(df, size="size", color="color")
+df["size"] = np.where(df[target] == 0, sizeA, np.where(df[target] == 1, sizeB, sizeC))
+
+# st.dataframe(df)
+
+try:
+    st.map(df, size="size", color="color", use_container_width=True)
+except Exception:
+    st.stop()
