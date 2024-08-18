@@ -11,7 +11,7 @@ from shapely.geometry import shape
 from streamlit_folium import st_folium
 
 st.set_page_config(
-    page_title="Ex-stream-ly Cool App",
+    page_title="Ex Cool App",
     page_icon="🍨",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -44,7 +44,7 @@ def _load_file(area) -> Any:
     """
     df: pd.DataFrame = _load_region()
     file = df[df["unit"] == area]["filename"].tolist()
-    file_path: str = f"./static/GeoJSON/{file[0]}"
+    file_path: str = f"./static/GeoJson/{file[0]}"
 
     # GeoJSONファイルを読み込む
     with open(file_path, "r", encoding="utf-8") as f:

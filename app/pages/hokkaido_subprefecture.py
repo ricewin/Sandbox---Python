@@ -7,7 +7,6 @@ from streamlit_folium import st_folium
 
 
 # GeoJSONファイルを読み込む
-@st.cache_data
 def _load_file(file_path) -> Any:
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -35,7 +34,7 @@ def get_unique_values_from_geojson(data, property_name) -> set[Any]:
 # Streamlit アプリのタイトル
 st.title("北海道の振興局")
 
-file_path = "./static/GeoJSON/N03-20240101_01_subprefecture.json"
+file_path = "./static/GeoJson/N03-20240101_01_subprefecture.json"
 data = _load_file(file_path)
 
 # ユニークな値を取得
