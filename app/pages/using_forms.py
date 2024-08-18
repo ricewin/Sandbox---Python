@@ -4,11 +4,6 @@ from lib.folium_map_builder import folium_map_builder
 from lib.st_map_builder import st_map_builder
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-named_color = {
-    "lavenderblush": "#fff0f5",
-    "lemonchiffon": "",
-}
-
 st.set_page_config(
     page_title="st.map",
     page_icon="🌏",

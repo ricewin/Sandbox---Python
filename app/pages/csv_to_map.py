@@ -99,7 +99,7 @@ if upload_file is not None:
     else:
         with st.expander("データフレームの編集"):
             st.info(
-                "緯度・経度のあるカラム名を「緯度」「経度」に書き換えて実行すると、マップ表示ができます。"
+                "緯度・経度のあるカラム名を「lat」「lon」に書き換えて実行すると、マップ表示ができます。"
             )
             st.dataframe(data)
 
@@ -140,14 +140,14 @@ if upload_file is None:
 if st.button(":mag_right: 実行", type="primary"):
     try:
         # 位置情報のないレコードをドロップ
-        df: pd.DataFrame = data.dropna(subset=["緯度", "経度"])
+        df: pd.DataFrame = data.dropna(subset=["lat", "lon"])
 
         # 地図の初期位置を設定
-        map_center: list[float] = [df["緯度"].mean(), df["経度"].mean()]
+        map_center: list[float] = [df["lat"].mean(), df["lon"].mean()]
 
     except KeyError:
         st.error(
-            "地図表示できません。「緯度」「経度」を指定しているか確認してください。"
+            "地図表示できません。「lat」「lon」を指定しているか確認してください。"
         )
         st.stop()
 
@@ -188,12 +188,12 @@ if st.button(":mag_right: 実行", type="primary"):
 
                     if count == 0:
                         add_marker(
-                            [row["緯度"], row["経度"]], "lightblue", tip, lightblue
+                            [row["lat"], row["lon"]], "lightblue", tip, lightblue
                         )
                     elif count == 1:
-                        add_marker([row["緯度"], row["経度"]], "pink", tip, pink)
+                        add_marker([row["lat"], row["lon"]], "pink", tip, pink)
                     else:
-                        add_marker([row["緯度"], row["経度"]], "red", tip, red)
+                        add_marker([row["lat"], row["lon"]], "red", tip, red)
 
                 lightblue.add_to(m)
                 pink.add_to(m)
@@ -204,7 +204,7 @@ if st.button(":mag_right: 実行", type="primary"):
 
     if heat_map:
         heatmap_group = folium.FeatureGroup(name="ヒートマップ")
-        coordinates: Any = df[["緯度", "経度"]].values.tolist()
+        coordinates: Any = df[["lat", "lon"]].values.tolist()
         HeatMap(coordinates).add_to(heatmap_group)
         heatmap_group.add_to(m)
 
