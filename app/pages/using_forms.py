@@ -51,7 +51,7 @@ if upload_file is not None:
     if not ("lat" in df.columns and "lon" in df.columns):
         with st.expander("データフレームの編集"):
             st.info(
-                "緯度・経度のあるカラム名を「lat」「lon」に書き換えて実行すると、マップ表示ができます。"
+                "緯度・経度のあるカラム名を「lat」「lon」に書き換えると、表示できます。"
             )
             st.dataframe(df)
 
@@ -60,14 +60,11 @@ if upload_file is not None:
                 st.text_input(f"{col} の新しい名前", value=col) for col in df.columns
             ]
 
-if "df" not in st.session_state:
-    try:
-        st.session_state.df = df
-    except NameError:
-        st.stop()
-
 if st.button("Generate new points", type="primary"):
     st.session_state.df = df
+
+if "df" not in st.session_state:
+    st.stop()
 
 if not ("lat" in st.session_state.df.columns and "lon" in st.session_state.df.columns):
     st.error("カラム名に「lat」「lon」が存在しません。")
