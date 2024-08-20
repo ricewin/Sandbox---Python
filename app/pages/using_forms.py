@@ -42,9 +42,6 @@ with st.expander("README"):
 
 upload_file: UploadedFile | None = st.file_uploader("Choose a file")
 
-if upload_file is None:
-    st.stop()
-
 if upload_file is not None:
     df: pd.DataFrame = _get_data(upload_file)
 
