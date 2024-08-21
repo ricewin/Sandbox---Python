@@ -21,19 +21,19 @@ def _color_name() -> Any:
 
 
 def _create_team_row(
-    team_name, default_color, default_opacity, default_size
-) -> tuple[str, Any, Any]:
+    team_name: str, default_color: str, default_opacity: int, default_size: int
+) -> tuple[str, int, int]:
     """
-    st.map の設定フォーム
+    st.map の設定アイテム
 
     Args:
-        team_name (_type_): チーム名
-        default_color (_type_): 既定色
-        default_opacity (_type_): 透明度
-        default_size (_type_): サイズ
+        team_name (str): チーム名
+        default_color (str): 既定色
+        default_opacity (int): 透明度
+        default_size (int): サイズ
 
     Returns:
-        tuple[str, Any, Any]: フォーム
+        tuple[str, int, int]: カラー、透明度、サイズ
     """
     row: list[DeltaGenerator] = st.columns([1, 2, 2])
     return (
