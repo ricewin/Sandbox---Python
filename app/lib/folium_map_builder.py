@@ -84,7 +84,11 @@ def folium_map_builder(df: pd.DataFrame) -> None:
     m = folium.Map(
         location=map_center,
         tiles=map_tile,
-        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
+        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html"target="_blank">地理院タイル</a>
+            Shoreline data is derived from: United States.
+            National Imagery and Mapping Agency.
+            "Vector Map Level 0 (VMAP0)." Bethesda, MD: Denver, CO: The Agency;
+            USGS Information Services, 1997.""",
         zoom_start=8,
     )
 
