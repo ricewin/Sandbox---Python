@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -6,11 +7,47 @@ import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
 
 
-def _color_name():
+def _color_name() -> Any:
+    """
+    <named-color> を読み込む
+
+    Returns:
+        data: json
+    """
     file_path = "./static/named_color.json"
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
+
+
+def _create_team_row(
+    team_name, default_color, default_opacity, default_size
+) -> tuple[str, Any, Any]:
+    """
+    st.map の設定フォーム
+
+    Args:
+        team_name (_type_): チーム名
+        default_color (_type_): 既定色
+        default_opacity (_type_): 透明度
+        default_size (_type_): サイズ
+
+    Returns:
+        tuple[str, Any, Any]: フォーム
+    """
+    row: list[DeltaGenerator] = st.columns([1, 2, 2])
+    return (
+        row[0].color_picker(team_name, default_color),
+        row[1].slider("Opacity", 20, 100, default_opacity, label_visibility="hidden"),
+        row[2].slider(
+            "Size",
+            50,
+            200,
+            default_size,
+            step=10,
+            label_visibility="hidden",
+        ),
+    )
 
 
 def st_map_builder(df: pd.DataFrame) -> None:
@@ -26,21 +63,21 @@ def st_map_builder(df: pd.DataFrame) -> None:
     with col1:
         st.subheader("Choose a color name")
 
-        color_nameA = st.selectbox(
+        color_nameA: Any | None = st.selectbox(
             "Team A",
             colors.keys(),
             index=116,
         )
         color_codeA = colors[color_nameA]
 
-        color_nameB = st.selectbox(
+        color_nameB: Any | None = st.selectbox(
             "Team B",
             colors.keys(),
             index=87,
         )
         color_codeB = colors[color_nameB]
 
-        color_nameC = st.selectbox(
+        color_nameC: Any | None = st.selectbox(
             "Team C",
             colors.keys(),
             index=86,
@@ -48,46 +85,25 @@ def st_map_builder(df: pd.DataFrame) -> None:
         color_codeC = colors[color_nameC]
 
     with col2:
-        with st.form("my_form"):
+        with st.form("map_form"):
             header: list[DeltaGenerator] = st.columns([1, 2, 2])
             header[0].subheader("Color")
             header[1].subheader("Opacity")
             header[2].subheader("Size")
 
-            row1: list[DeltaGenerator] = st.columns([1, 2, 2])
-            colorA = row1[0].color_picker("Team A", color_codeA)
-            opacityA = row1[1].slider(
-                "A opacity", 20, 100, 35, label_visibility="hidden"
-            )
-            sizeA = row1[2].slider(
-                "A size", 50, 200, 100, step=10, label_visibility="hidden"
-            )
+            colorA, opacityA, sizeA = _create_team_row("Team A", color_codeA, 35, 100)
+            colorB, opacityB, sizeB = _create_team_row("Team B", color_codeB, 50, 150)
+            colorC, opacityC, sizeC = _create_team_row("Team C", color_codeC, 60, 200)
 
-            row2: list[DeltaGenerator] = st.columns([1, 2, 2])
-            colorB = row2[0].color_picker("Team B", color_codeB)
-            opacityB = row2[1].slider(
-                "B opacity", 20, 100, 50, label_visibility="hidden"
-            )
-            sizeB = row2[2].slider(
-                "B size", 50, 200, 150, step=10, label_visibility="hidden"
-            )
-
-            row3: list[DeltaGenerator] = st.columns([1, 2, 2])
-            colorC = row3[0].color_picker("Team C", color_codeC)
-            opacityC = row3[1].slider(
-                "C opacity", 20, 100, 60, label_visibility="hidden"
-            )
-            sizeC = row3[2].slider(
-                "C size", 50, 200, 200, step=10, label_visibility="hidden"
-            )
-
-            header: list[DeltaGenerator] = st.columns([2, 3])
+            header = st.columns([2, 3])
             header[0].subheader("Separate")
 
             row4: list[DeltaGenerator] = st.columns([2, 3])
-            target = row4[0].selectbox(
+            target: str | None = row4[0].selectbox(
                 "Divide into teams",
-                df.columns.to_list(),
+                [col for col in df.columns if "数" in col],
+                # 値の型で判断するなら
+                # [col for col in df.columns if df[col].dtype == "int64"],
                 help="数値でチームを分けます。A: 0, B: 1, C: more",
             )
 
