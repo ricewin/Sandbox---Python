@@ -1,13 +1,13 @@
-import json
 from typing import Any, Literal
 
 import folium
+import geopandas as gpd
 import pandas as pd
-from shapely.geometry.base import BaseGeometry
 import streamlit as st
 from lib.region_builder import region_builder
 from shapely import Point
 from shapely.geometry import shape
+from shapely.geometry.base import BaseGeometry
 from streamlit_folium import st_folium
 
 st.set_page_config(
@@ -46,14 +46,9 @@ def _load_file(area) -> Any:
     file = df[df["unit"] == area]["filename"].tolist()
     file_path: str = f"./static/GeoJson/{file[0]}"
 
-    # GeoJSONファイルを読み込む
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    return data
+    return gpd.read_file(file_path)
 
 
-@st.cache_data
 def _base_map(center) -> folium.Map:
     """
     ベースマップを作成する
@@ -67,13 +62,15 @@ def _base_map(center) -> folium.Map:
     return folium.Map(
         location=center,
         zoom_start=8,
+        max_zoom=14,
+        min_zoom=9,
         center=center,
         tiles=map_tile,
-        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html">地理院タイル</a>""",
+        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">地理院タイル</a>""",
     )
 
 
-def _map_center(geo_json_data) -> tuple[float, float]:
+def _map_center(gdf) -> tuple[float, float]:
     """
     GeoJson の中心位置を求める
 
@@ -83,13 +80,13 @@ def _map_center(geo_json_data) -> tuple[float, float]:
     Returns:
         tuple[float, float]: latitude, longitude
     """
-    try:
-        # GeoJSONデータからシェイプを作成
-        geom = shape(geo_json_data["features"][0]["geometry"])
-        # st.code(0)
-    except AttributeError:
-        geom: BaseGeometry = shape(geo_json_data["features"][1]["geometry"])
-        # st.code(1)
+    # gdf
+    # 'prefecture'をキーにしてgeometryを統合
+    grouped_gdf = gdf.dissolve(by=["N03_001"], as_index=False)
+    # grouped_gdf
+
+    # GeoJSONデータからシェイプを作成
+    geom: BaseGeometry = shape(grouped_gdf["geometry"][0])
 
     centroid: Point = geom.centroid
     return centroid.y, centroid.x
