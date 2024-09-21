@@ -66,7 +66,10 @@ def _base_map(center) -> folium.Map:
         min_zoom=9,
         center=center,
         tiles=map_tile,
-        attr="""<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">地理院タイル</a>""",
+        attr="""<a
+        href="https://maps.gsi.go.jp/development/ichiran.html"
+        target="_blank">地理院タイル</a>
+        """,
     )
 
 
