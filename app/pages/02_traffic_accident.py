@@ -5,7 +5,7 @@ from lib.st_map_builder import st_map_builder
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 st.set_page_config(
-    page_title="st.map",
+    page_title="Traffic accident",
     page_icon="🌏",
     layout="wide",
     initial_sidebar_state="expanded",
