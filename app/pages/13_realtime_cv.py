@@ -9,16 +9,16 @@ from streamlit_webrtc import webrtc_streamer  # type: ignore
 st.title("My first Streamlit app")
 st.write("Hello, world")
 
-threshold1 = st.slider("Threshold1", min_value=0, max_value=1000, step=1, value=100)
-threshold2 = st.slider("Threshold2", min_value=0, max_value=1000, step=1, value=200)
+threshold1: int = st.slider("Threshold1", min_value=0, max_value=1000, step=1, value=100)
+threshold2: int = st.slider("Threshold2", min_value=0, max_value=1000, step=1, value=200)
 
 
-def callback(frame):
+def callback(frame) -> av.VideoFrame:  # type: ignore
     img = frame.to_ndarray(format="bgr24")
 
     img = cv2.cvtColor(cv2.Canny(img, threshold1, threshold2), cv2.COLOR_GRAY2BGR)
 
-    return av.VideoFrame.from_ndarray(img, format="bgr24")
+    return av.VideoFrame.from_ndarray(img, format="bgr24")  # type: ignore
 
 
 webrtc_streamer(
