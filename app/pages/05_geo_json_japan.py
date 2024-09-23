@@ -1,7 +1,7 @@
 from typing import Any, Literal
 
 import folium
-import geopandas as gpd
+import geopandas as gpd  # type: ignore
 import pandas as pd
 import streamlit as st
 from lib.region_builder import region_builder

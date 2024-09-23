@@ -12,17 +12,18 @@ def _load_city() -> pd.DataFrame:
     return pd.read_csv("./static/prefcode_citycode_master_utf8_2020.csv")
 
 
-col1, col2 = st.columns(2)
-with col1:
-    df = _load_region()
+if st.button("Fetch region code", type="primary"):
+    col1, col2 = st.columns(2)
+    with col1:
+        df = _load_region()
 
-    pref_dict = dict(zip(df["prefcode"], df["prefname"]))
+        pref_dict = dict(zip(df["prefcode"], df["prefname"]))
 
-    st.write(pref_dict)
+        st.write(pref_dict)
 
-with col2:
-    df = _load_city()
+    with col2:
+        df = _load_city()
 
-    city_dict = dict(zip(df["citycode"], df["cityname"]))
+        city_dict = dict(zip(df["citycode"], df["cityname"]))
 
-    st.write(city_dict)
+        st.write(city_dict)
