@@ -128,10 +128,10 @@ folium.GeoJson(
 ).add_to(m)
 
 folium.plugins.Fullscreen(  # type: ignore
-    position="topright",
-    title="Expand me",
-    title_cancel="Exit me",
-    force_separate_button=True,
+    # position="topright",
+    # title="Expand me",
+    # title_cancel="Exit me",
+    # force_separate_button=True,
 ).add_to(m)
 
 st_folium(m, use_container_width=True, height=900, returned_objects=[])
