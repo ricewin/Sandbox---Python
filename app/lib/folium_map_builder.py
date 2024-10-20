@@ -132,17 +132,15 @@ def folium_map_builder(df: pd.DataFrame) -> None:
 
     if heat_map:
         heatmap_group = folium.FeatureGroup(name="ヒートマップ")
-        coordinates: Any = df[["lat", "lon"]].values.tolist()
+        coordinates: Any = df[["lat", "lon", "負傷者数"]].values.tolist()
         HeatMap(coordinates).add_to(heatmap_group)
         heatmap_group.add_to(m)
 
     folium.plugins.Geocoder(position="topleft", collapsed=True).add_to(m)  # type: ignore
 
     folium.plugins.Fullscreen(  # type: ignore
-        position="topleft",
         title="Expand me",
         title_cancel="Exit me",
-        force_separate_button=True,
     ).add_to(m)
 
     folium.LayerControl().add_to(m)

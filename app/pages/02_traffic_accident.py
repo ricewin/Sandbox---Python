@@ -1,8 +1,8 @@
 import pandas as pd
 import streamlit as st
 from lib.folium_map_builder import folium_map_builder
-from lib.st_map_builder import st_map_builder
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+from lib.h3_map import h3_layer_map
 
 st.set_page_config(
     page_title="Traffic accident",
@@ -10,6 +10,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+if "has_st_map" not in st.session_state:
+    st.session_state["has_st_map"] = False
 
 
 def _get_data(csv_file: UploadedFile) -> pd.DataFrame:
@@ -46,6 +49,11 @@ if upload_file is not None:
     df: pd.DataFrame = _get_data(upload_file)
 
     if not ("lat" in df.columns and "lon" in df.columns):
+        # カラム名を変更
+        df.rename(
+            columns={"地点　緯度（北緯）": "lat", "地点　経度（東経）": "lon"},
+            inplace=True,
+        )
         with st.expander("データフレームの編集"):
             st.info(
                 "緯度・経度のあるカラム名を「lat」「lon」に書き換えると、表示できます。"
@@ -70,11 +78,11 @@ if not ("lat" in st.session_state.df.columns and "lon" in st.session_state.df.co
 
 df = st.session_state.df
 
-is_st_map: bool = st.toggle(
-    "folium.map ⇔ st.map",
+st.session_state["has_st_map"] = st.toggle(
+    "folium.map ⇔ st.map", value=st.session_state["has_st_map"]
 )
 
-if is_st_map:
-    st_map_builder(df)
+if st.session_state["has_st_map"]:
+    h3_layer_map(df, "負傷者数")
 else:
     folium_map_builder(df)
