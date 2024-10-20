@@ -59,7 +59,6 @@ def h3_layer_map(
         lambda row: h3.latlng_to_cell(row["lat"], row["lon"], resolution), axis=1
     )
 
-
     # st.write(df)
 
     # pydeck用データの作成
