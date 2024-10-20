@@ -63,12 +63,14 @@ def h3_layer_map(
 
     # pydeck用データの作成
     if calc == "count":
-        deck_data = df.groupby("hex").size().reset_index(name="count")  # type: ignore
-        deck_data["max"] = deck_data["count"].max()
+        deck_data = df.groupby("hex").size().astype(int).reset_index(name="count")  # type: ignore
+        deck_data["max"] = int(deck_data["count"].max())
 
     if calc == "mean":
-        deck_data = df.groupby("hex")[target].mean().reset_index(name="count")
-        deck_data["max"] = int(df[target].max())
+        deck_data = (
+            df.groupby("hex")[target].mean().astype(int).reset_index(name="count")
+        )
+        deck_data["max"] = int(deck_data["count"].max())
 
     # st.dataframe(deck_data)
 

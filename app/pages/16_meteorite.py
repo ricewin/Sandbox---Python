@@ -94,13 +94,23 @@ df = st.session_state[ss_key]
 # 位置情報のないレコードをドロップ
 df = df.dropna(subset=["lat", "lon"])
 
+item: str | None = st.selectbox(
+    "Choose item",
+    [
+        col
+        for col in df.columns
+        if df[col].dtype == "int64" or df[col].dtype == "float64"
+    ],
+    help="アイテムを選んでください",
+)
+
 # NaNを0で埋める
-df["mass"].fillna(0, inplace=True)
+df[item].fillna(0, inplace=True)
 
 plot = st.selectbox("Plot", ["Count", "Mean"])
 
 if plot == "Count":
-    h3_layer_map(df, "mass", "count", zoom=1, resolution=2)
+    h3_layer_map(df, item, "count", zoom=1, resolution=2)
 
 if plot == "Mean":
-    h3_layer_map(df, "mass", "mean", zoom=1, resolution=2)
+    h3_layer_map(df, item, "mean", zoom=1, resolution=2)
