@@ -1,4 +1,3 @@
-# import folium
 import pandas as pd
 import streamlit as st
 from lib.h3_map import h3_layer_map
