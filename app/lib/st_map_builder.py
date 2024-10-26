@@ -50,6 +50,7 @@ def _create_team_row(
     )
 
 
+@st.fragment
 def st_map_builder(df: pd.DataFrame) -> None:
     """
     Map Component

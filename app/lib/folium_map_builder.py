@@ -26,6 +26,7 @@ def _add_marker(
     ).add_to(mymap)
 
 
+@st.fragment
 def folium_map_builder(df: pd.DataFrame) -> None:
     """
     Map Component
@@ -36,19 +37,22 @@ def folium_map_builder(df: pd.DataFrame) -> None:
     with st.form("my_form"):
         header: list[DeltaGenerator] = st.columns(4)
         header[0].subheader("Pin")
-        header[1].subheader("Heat map")
-        header[2].subheader("Style")
+        header[1].subheader("Circle")
+        header[2].subheader("Heat map")
+        header[3].subheader("Style")
 
         row1: list[DeltaGenerator] = st.columns(4)
         pin_map: bool = row1[0].toggle(
             "ピン", help="ピンを表示すると処理が重くなります。"
         )
 
-        heat_map: bool = row1[1].toggle(
+        circle_map: bool = row1[1].toggle("サークル", help="サークル。")
+
+        heat_map: bool = row1[2].toggle(
             "ヒートマップ", value=True, help="オフにしても体感は変わりません。"
         )
 
-        map_style: str | None = row1[2].radio(
+        map_style: str | None = row1[3].radio(
             "地図のスタイル",
             options=["標準", "淡色"],
             index=1,
@@ -56,7 +60,19 @@ def folium_map_builder(df: pd.DataFrame) -> None:
             help="淡色がおすすめ。",
         )
 
+        item: str | None = st.selectbox(
+            "Choose item",
+            [
+                col
+                for col in df.columns
+                if df[col].dtype == "int64" or df[col].dtype == "float64"
+            ],
+            help="アイテムを選んでください",
+        )
+
         st.form_submit_button("Update map")
+
+    target: str = item
 
     if map_style == "標準":
         map_tile = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
@@ -96,39 +112,70 @@ def folium_map_builder(df: pd.DataFrame) -> None:
         with st.spinner("Cluster Making..."):
             try:
                 # ピンをグループ化するマーカーグループクラスタを作成
-                lightblue = MarkerCluster(name="負傷のみ")
-                pink = MarkerCluster(name="単体死亡")
-                red = MarkerCluster(name="複数死亡")
+                # lightblue = MarkerCluster(name="負傷のみ")
+                # pink = MarkerCluster(name="単体死亡")
+                # red = MarkerCluster(name="複数死亡")
+                red = MarkerCluster(name=target)
 
-                target = "死者数"
                 for index, row in df.iterrows():
                     count: Any = row[target]
 
                     tip: str = f"""
-                        発生日時: {row["発生日時"]}<br />
-                        天候: {row["天候"]}<br />
-                        路面状態: {row["路面状態"]}<br />
-                        当事者A: {row["車両の損壊程度（当事者A）"]}<br />
-                        当事者B: {row["車両の損壊程度（当事者B）"]}<br />
-                        負傷者数: {row["負傷者数"]} 人,
-                        死者数: {count} 人
+                        Count: {count}
                     """
 
-                    if count == 0:
-                        _add_marker(
-                            [row["lat"], row["lon"]], "lightblue", tip, lightblue
-                        )
-                    elif count == 1:
-                        _add_marker([row["lat"], row["lon"]], "pink", tip, pink)
-                    else:
-                        _add_marker([row["lat"], row["lon"]], "red", tip, red)
+                    # if count == 0:
+                    #     _add_marker(
+                    #         [row["lat"], row["lon"]], "lightblue", tip, lightblue
+                    #     )
+                    # elif count == 1:
+                    #     _add_marker([row["lat"], row["lon"]], "pink", tip, pink)
+                    # else:
+                    _add_marker([row["lat"], row["lon"]], "red", tip, red)
 
-                lightblue.add_to(m)
-                pink.add_to(m)
+                # lightblue.add_to(m)
+                # pink.add_to(m)
                 red.add_to(m)
 
             except KeyError:
                 st.info("ヒートマップのみ表示します。")
+
+    if circle_map:
+        with st.spinner("Circle Making..."):
+            # Define a function to determine the color based on the target value
+            def get_color(value):
+                if value == 0:
+                    return "red"
+
+                if value == 1:
+                    return "yellow"
+
+                if value == 2:
+                    return "green"
+
+                return "blue"
+
+            df["max"] = df[target].max()
+            radius = 100
+
+            circle = folium.FeatureGroup(name="サークル")
+            # Assuming you have a DataFrame `df` with `lat`, `lon`, and `target` columns
+            for _, row in df.iterrows():
+                color = get_color(row[target])
+                folium.Circle(
+                    location=[row["lat"], row["lon"]],
+                    radius=radius,
+                    color=color,
+                    weight=1,
+                    fill_opacity=0.4,
+                    opacity=1,
+                    fill_color=color,
+                    fill=True,  # Enable fill with the specified fill_color
+                    popup="{} meters".format(radius),
+                    tooltip=f"Count: {row[target]}",
+                ).add_to(circle)
+
+            circle.add_to(m)
 
     if heat_map:
         heatmap_group = folium.FeatureGroup(name="ヒートマップ")

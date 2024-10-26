@@ -44,7 +44,7 @@ def _load_file(area) -> Any:
     """
     df: pd.DataFrame = _load_region()
     file = df[df["unit"] == area]["filename"].tolist()
-    file_path: str = f"./static/GeoJson/{file[0]}"
+    file_path: str = f"https://raw.githubusercontent.com/ricewin/simplify-japan-geojson/refs/heads/main/GeoJson/{file[0]}"
 
     return gpd.read_file(file_path)
 

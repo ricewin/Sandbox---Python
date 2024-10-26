@@ -1,8 +1,9 @@
 import pandas as pd
 import streamlit as st
 from lib.folium_map_builder import folium_map_builder
-from streamlit.runtime.uploaded_file_manager import UploadedFile
 from lib.h3_map import h3_layer_map
+from lib.st_map_builder import st_map_builder
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 st.set_page_config(
     page_title="Traffic accident",
@@ -83,6 +84,10 @@ st.session_state["has_st_map"] = st.toggle(
 )
 
 if st.session_state["has_st_map"]:
-    h3_layer_map(df, "負傷者数")
+    is_h3_map = st.toggle("st.map ⇔ h3.map")
+    if is_h3_map:
+        h3_layer_map(df, "負傷者数")
+    else:
+        st_map_builder(df)
 else:
     folium_map_builder(df)
