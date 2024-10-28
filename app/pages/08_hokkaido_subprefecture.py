@@ -1,19 +1,19 @@
-import json
+from operator import sub
 from typing import Any
 
 import folium
+import geopandas as gpd  # type: ignore
 import streamlit as st
 from streamlit_folium import st_folium
 
 
 # GeoJSONファイルを読み込む
+@st.cache_data
 def _load_file(file_path) -> Any:
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data
+    return gpd.read_file(file_path)
 
 
-def get_unique_values_from_geojson(data, property_name) -> set[Any]:
+def get_unique_values_from_geojson(data, property_name) -> Any:
     """
     GeoJSON データから指定されたプロパティのユニークな値を取得する
 
@@ -24,17 +24,15 @@ def get_unique_values_from_geojson(data, property_name) -> set[Any]:
     Returns:
         set[Any]: ユニークな値のセット
     """
-    return {
-        feature["properties"][property_name]
-        for feature in data["features"]
-        if property_name in feature["properties"]
-    }
+    return data.loc[:, [property_name]]
 
 
 # Streamlit アプリのタイトル
 st.title("北海道の振興局")
 
-file_path = "./static/GeoJson/N03-20240101_01_subprefecture.json"
+file_path: str = (
+    "https://raw.githubusercontent.com/ricewin/simplify-japan-geojson/refs/heads/main/GeoJson/N03-20240101_01_subprefecture.json"
+)
 data = _load_file(file_path)
 
 # ユニークな値を取得

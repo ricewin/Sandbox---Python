@@ -54,17 +54,20 @@ def h3_layer_map(
             ],
         )
 
-    if "dark" in map_style:
-        line_color = [255, 250, 205]  # lemonchiffon
-    else:
-        line_color = [127, 255, 212]  # aquamarine
+    # if "dark" in map_style:
+    #     line_color = [255, 250, 205]  # lemonchiffon
+    # else:
+    #     line_color = [127, 255, 212]  # aquamarine
+
+    # 赤から青のグラデーション
+    # color="[255 - (count / max) * 255, 0, (count / max) * 255, 128]"
+    # 青から赤のグラデーション
+    color = "[(count / max) * 255, 0, 255 - (count / max) * 255, 144]"
 
     # H3インデックスを作成
     df["hex"] = df.apply(
         lambda row: h3.latlng_to_cell(row["lat"], row["lon"], resolution), axis=1
     )
-
-    # st.write(df)
 
     # pydeck用データの作成
     if calc == "count":
@@ -77,7 +80,7 @@ def h3_layer_map(
         )
         deck_data["max"] = int(deck_data["count"].max())
 
-    # st.dataframe(deck_data)
+    # st.dataframe(deck_data.head())
 
     layer = pdk.Layer(
         "H3HexagonLayer",
@@ -87,12 +90,8 @@ def h3_layer_map(
         filled=True,
         extruded=False,
         get_hexagon="hex",
-        # get_hexagons="hex",
-        # 赤から青のグラデーション
-        # get_fill_color="[255 - (count / max) * 255, 0, (count / max) * 255, 128]",
-        # 青から赤のグラデーション
-        get_fill_color="[(count / max) * 255, 0, 255 - (count / max) * 255, 144]",
-        get_line_color=line_color,
+        get_fill_color=color,
+        get_line_color=color,
         line_width_min_pixels=1,
     )
 

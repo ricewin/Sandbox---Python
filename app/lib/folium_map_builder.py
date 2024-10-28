@@ -72,8 +72,6 @@ def folium_map_builder(df: pd.DataFrame) -> None:
 
         st.form_submit_button("Update map")
 
-    target: str = item
-
     if map_style == "標準":
         map_tile = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
     else:
@@ -115,10 +113,10 @@ def folium_map_builder(df: pd.DataFrame) -> None:
                 # lightblue = MarkerCluster(name="負傷のみ")
                 # pink = MarkerCluster(name="単体死亡")
                 # red = MarkerCluster(name="複数死亡")
-                red = MarkerCluster(name=target)
+                red = MarkerCluster(name=item)
 
                 for index, row in df.iterrows():
-                    count: Any = row[target]
+                    count: Any = row[item]
 
                     tip: str = f"""
                         Count: {count}
@@ -155,13 +153,13 @@ def folium_map_builder(df: pd.DataFrame) -> None:
 
                 return "blue"
 
-            df["max"] = df[target].max()
+            df["max"] = df[item].max()
             radius = 100
 
             circle = folium.FeatureGroup(name="サークル")
             # Assuming you have a DataFrame `df` with `lat`, `lon`, and `target` columns
             for _, row in df.iterrows():
-                color = get_color(row[target])
+                color = get_color(row[item])
                 folium.Circle(
                     location=[row["lat"], row["lon"]],
                     radius=radius,
@@ -172,14 +170,14 @@ def folium_map_builder(df: pd.DataFrame) -> None:
                     fill_color=color,
                     fill=True,  # Enable fill with the specified fill_color
                     popup="{} meters".format(radius),
-                    tooltip=f"Count: {row[target]}",
+                    tooltip=f"Count: {row[item]}",
                 ).add_to(circle)
 
             circle.add_to(m)
 
     if heat_map:
         heatmap_group = folium.FeatureGroup(name="ヒートマップ")
-        coordinates: Any = df[["lat", "lon", "負傷者数"]].values.tolist()
+        coordinates: Any = df[["lat", "lon", item]].values.tolist()
         HeatMap(coordinates).add_to(heatmap_group)
         heatmap_group.add_to(m)
 
