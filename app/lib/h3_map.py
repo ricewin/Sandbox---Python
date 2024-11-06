@@ -3,14 +3,50 @@ H3HexagonLayer
 ==============
 
 Plot of values for a particular hex ID in the H3 geohashing scheme.
-
-This example is adapted from the deck.gl documentation.
 """
 
+from typing import List
+
+import branca.colormap as cm
 import h3
 import pandas as pd
 import pydeck as pdk
 import streamlit as st
+
+
+@st.cache_resource(ttl="2d")
+def get_quantiles(df_column: pd.Series, quantiles: List) -> pd.Series:
+    return df_column.quantile(quantiles)
+
+
+@st.cache_resource(ttl="2d")
+def get_color(
+    df_column: pd.Series, colors: List, vmin: int, vmax: int, index: pd.Series
+) -> pd.Series:
+    color_map = cm.LinearColormap(colors, vmin=vmin, vmax=vmax, index=index)  # type: ignore
+    return df_column.apply(color_map.rgb_bytes_tuple)
+
+
+@st.cache_resource(ttl="2d")
+def get_layer(df: pd.DataFrame) -> pdk.Layer:
+    return pdk.Layer(
+        "H3HexagonLayer",
+        df,
+        pickable=True,
+        stroked=True,
+        filled=True,
+        extruded=False,
+        get_hexagon="hex",
+        get_fill_color="color",
+        get_line_color="color",
+        line_width_min_pixels=1,
+        get_elevation="count",
+        auto_highlight=True,
+        elevation_scale=50,
+        elevation_range=[0, 3000],
+        coverage=1,
+        opacity=0.5,
+    )
 
 
 @st.fragment
@@ -33,12 +69,14 @@ def h3_layer_map(
         zoom (int, optional): ズームレベル. 1 to 10. Defaults to 6.
         pitch (int, optional): ビューの角度. Defaults to 0.
     """
-    cols = st.columns([1, 1])
+    # st.write(df.head())
+
+    cols = st.columns(3)
     with cols[0]:
         resolution = st.slider(
             "H3 resolution",
-            min_value=1,
-            max_value=10,
+            min_value=2,
+            max_value=9,
             value=resolution,
         )
 
@@ -54,15 +92,8 @@ def h3_layer_map(
             ],
         )
 
-    # if "dark" in map_style:
-    #     line_color = [255, 250, 205]  # lemonchiffon
-    # else:
-    #     line_color = [127, 255, 212]  # aquamarine
-
-    # 赤から青のグラデーション
-    # color="[255 - (count / max) * 255, 0, (count / max) * 255, 128]"
-    # 青から赤のグラデーション
-    color = "[(count / max) * 255, 0, 255 - (count / max) * 255, 144]"
+    with cols[2]:
+        style_option = st.selectbox("Style schema", ("Contrast", "Snowflake"))
 
     # H3インデックスを作成
     df["hex"] = df.apply(
@@ -80,20 +111,20 @@ def h3_layer_map(
         )
         deck_data["max"] = int(deck_data["count"].max())
 
-    # st.dataframe(deck_data.head())
+    if style_option == "Contrast":
+        quantiles = get_quantiles(deck_data["count"], [0, 0.25, 0.5, 0.75, 1])
+        colors = ["gray", "blue", "green", "yellow", "orange", "red"]
+    if style_option == "Snowflake":
+        quantiles = get_quantiles(deck_data["count"], [0, 0.33, 0.66, 1])
+        colors = ["#666666", "#24BFF2", "#126481", "#D966FF"]
 
-    layer = pdk.Layer(
-        "H3HexagonLayer",
-        deck_data,
-        pickable=True,
-        stroked=True,
-        filled=True,
-        extruded=False,
-        get_hexagon="hex",
-        get_fill_color=color,
-        get_line_color=color,
-        line_width_min_pixels=1,
+    deck_data["color"] = get_color(
+        deck_data["count"], colors, quantiles.min(), quantiles.max(), quantiles
     )
+
+    # st.write(deck_data.head())
+
+    layer = get_layer(deck_data)
 
     # Set the viewport location
     view_state = pdk.ViewState(
