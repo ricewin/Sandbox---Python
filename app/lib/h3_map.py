@@ -28,21 +28,21 @@ def get_color(
 
 
 @st.cache_resource(ttl="2d")
-def get_layer(df: pd.DataFrame) -> pdk.Layer:
+def get_layer(df: pd.DataFrame, elevation_scale: int) -> pdk.Layer:
     return pdk.Layer(
         "H3HexagonLayer",
         df,
         pickable=True,
         stroked=True,
         filled=True,
-        extruded=False,
+        extruded=True,
         get_hexagon="hex",
         get_fill_color="color",
         get_line_color="color",
         line_width_min_pixels=1,
         get_elevation="count",
         auto_highlight=True,
-        elevation_scale=50,
+        elevation_scale=elevation_scale,
         elevation_range=[0, 3000],
         coverage=1,
         opacity=0.5,
@@ -57,6 +57,7 @@ def h3_layer_map(
     resolution: int = 5,
     zoom: int = 6,
     pitch: int = 0,
+    elevation_scale: int = 50,
 ) -> None:
     """
     H3HexagonLayer
@@ -68,6 +69,7 @@ def h3_layer_map(
         resolution (int, optional): 解像度レベル. Defaults to 5.
         zoom (int, optional): ズームレベル. 1 to 10. Defaults to 6.
         pitch (int, optional): ビューの角度. Defaults to 0.
+        elevation_scale (int, optional): 高さのスケール. Defaults to 50.
     """
     # st.write(df.head())
 
@@ -109,7 +111,6 @@ def h3_layer_map(
         deck_data = (
             df.groupby("hex")[target].mean().astype(int).reset_index(name="count")
         )
-        deck_data["max"] = int(deck_data["count"].max())
 
     if style_option == "Contrast":
         quantiles = get_quantiles(deck_data["count"], [0, 0.25, 0.5, 0.75, 1])
@@ -122,9 +123,23 @@ def h3_layer_map(
         deck_data["count"], colors, quantiles.min(), quantiles.max(), quantiles
     )
 
-    # st.write(deck_data.head())
+    with st.expander("Check data."):
+        # st.write(deck_data.head())
 
-    layer = get_layer(deck_data)
+        cell = deck_data["hex"].iloc[0]
+        # boundary = h3.cell_to_boundary(cell)
+        # st.write("boundary: ", boundary)
+
+        cell_area = h3.cell_area(cell, "km^2")
+        st.write("cell_area: ", cell_area, "km^2")
+
+        area = h3.average_hexagon_area(resolution, "m^2")
+        st.write("average_hexagon_area: ", area, "m^2")
+
+        edge = h3.average_hexagon_edge_length(resolution, "m")
+        st.write("average_hexagon_edge_length: ", edge, "m")
+
+    layer = get_layer(deck_data, elevation_scale)
 
     # Set the viewport location
     view_state = pdk.ViewState(

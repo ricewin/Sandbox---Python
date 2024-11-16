@@ -69,7 +69,7 @@ with btns[0]:
                 st.stop()
 
 with btns[1]:
-    if st.button("Delete", type="primary"):
+    if st.button("Clear", type="primary"):
         if ss_key in st.session_state.keys():
             del st.session_state[ss_key]
 
@@ -103,13 +103,41 @@ item: str | None = st.selectbox(
     help="アイテムを選んでください",
 )
 
-# NaNを0で埋める
-df[item].fillna(0, inplace=True)
+# # NaNを0で埋める
+# df[item].fillna(0, inplace=True)
 
-plot = st.selectbox("Plot", ["Count", "Mean"])
+# データが欠損している行をドロップする
+df = df.dropna(subset=[item])
+
+col1, col2 = st.columns(2)
+with col1:
+    plot = st.selectbox("Plot", ["Count", "Mean"])
+
+with col2:
+    elevation_scale = st.slider(
+        "elevation scale",
+        min_value=0,
+        max_value=100,
+        step=10,
+        value=50,
+    )
 
 if plot == "Count":
-    h3_layer_map(df, item, "count", zoom=1, resolution=2)
+    h3_layer_map(
+        df,
+        item,
+        "count",
+        zoom=1,
+        resolution=2,
+        elevation_scale=elevation_scale,
+    )
 
 if plot == "Mean":
-    h3_layer_map(df, item, "mean", zoom=1, resolution=2)
+    h3_layer_map(
+        df,
+        item,
+        "mean",
+        zoom=1,
+        resolution=2,
+        elevation_scale=elevation_scale,
+    )
