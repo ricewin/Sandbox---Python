@@ -105,7 +105,6 @@ def h3_layer_map(
     # pydeck用データの作成
     if calc == "count":
         deck_data = df.groupby("hex").size().astype(int).reset_index(name="count")  # type: ignore
-        deck_data["max"] = int(deck_data["count"].max())
 
     if calc == "mean":
         deck_data = (
@@ -127,17 +126,15 @@ def h3_layer_map(
         # st.write(deck_data.head())
 
         cell = deck_data["hex"].iloc[0]
-        # boundary = h3.cell_to_boundary(cell)
-        # st.write("boundary: ", boundary)
 
         cell_area = h3.cell_area(cell, "km^2")
-        st.write("cell_area: ", cell_area, "km^2")
+        st.write("Cell area: ", cell_area, "km^2")
 
         area = h3.average_hexagon_area(resolution, "m^2")
-        st.write("average_hexagon_area: ", area, "m^2")
+        st.write("Average hexagon area: ", area, "m^2")
 
         edge = h3.average_hexagon_edge_length(resolution, "m")
-        st.write("average_hexagon_edge_length: ", edge, "m")
+        st.write("Average hexagon edge length: ", edge, "m")
 
     layer = get_layer(deck_data, elevation_scale)
 
@@ -152,11 +149,11 @@ def h3_layer_map(
 
     # Set view deck
     deck = pdk.Deck(
-        map_style=map_style,
+        map_style=map_style,  # type: ignore
         layers=[layer],
         initial_view_state=view_state,
         tooltip={"text": "Count: {count}"},  # type: ignore
     )
 
     # Render the map in Streamlit
-    st.pydeck_chart(deck, use_container_width=True, height=800)
+    st.pydeck_chart(deck, use_container_width=True, height=800)  # type: ignore
