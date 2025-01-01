@@ -1,4 +1,6 @@
 .streamlit/
 .vscode/
+GeoJson/
+Ooji-cho-machi/
 
 __pycache__/
