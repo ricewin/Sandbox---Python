@@ -21,6 +21,7 @@ numpy = "^2.1.1"
 opencv-python-headless = "^4.10.0.84"
 streamlit-webrtc = "^0.47.9"
 h3 = "^4.1.1"
+seaborn = "^0.13.2"
 
 [build-system]
 requires = ["poetry-core"]
