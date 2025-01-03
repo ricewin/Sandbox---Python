@@ -69,7 +69,9 @@ if ss.now == 0:
     st.info("Seabornに載っているデータセットです。可視化するものを選択してください。")
     if "idx0" not in ss:  # 初期化
         ss.idx0 = 0
-    ss.ds = st.radio("", DATA, ss.idx0, horizontal=True, label_visibility="collapsed")
+    ss.ds = st.radio(
+        "dataset", DATA, ss.idx0, horizontal=True, label_visibility="collapsed"
+    )
     ss.idx0 = [i for i, e in enumerate(DATA) if e == ss.ds][0]  # 状態の記憶
     ss.df = sns.load_dataset(ss.ds)  # データセットを読み込む
     st.write("選択中のデータ：(行の数, 列の数) = ({}, {})".format(*ss.df.shape))
