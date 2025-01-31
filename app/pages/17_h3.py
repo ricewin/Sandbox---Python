@@ -1,45 +1,65 @@
 import h3
 import streamlit as st
 
-# Streamlitアプリの設定
-st.title("緯度と経度からH3インデックスを生成")
-st.write("緯度と経度を入力してください。")
+st.title("緯度と経度から H3 インデックスを生成してみる")
 
 
 @st.fragment
-def user_input():
-    # ユーザー入力を取得
-    lat = st.number_input("緯度", value=35.6895)
-    lon = st.number_input("経度", value=139.6917)
-    resolution = st.slider("H3解像度", 0, 15, value=9)
+def main() -> None:
+    # 事前準備
+    lat: float = st.number_input("緯度", value=35.6895)
+    lon: float = st.number_input("経度", value=139.6917)
+    resolution: int = st.slider("H3解像度", 0, 15, value=8)
 
-    # H3インデックス(16進数形式)を生成
-    h3_index = h3.latlng_to_cell(lat, lon, resolution)
+    with st.echo():
+        st.subheader("Example", divider="orange")
 
-    # int関数を使ってstr → int変換
-    h3_index_int = int(h3_index, 16)
+        # 準備: H3インデックス(16進数形式)[str] を生成する
+        h3_index = h3.latlng_to_cell(lat, lon, resolution)
 
-    # hex関数を使ってint → str変換
-    hex_num = hex(h3_index_int)
+        # ここから比較
 
-    # 結果を表示
-    with st.container(border=True):
-        st.write("H3インデックス (str): ", h3_index)
-        st.write("H3インデックス (int): ", h3_index_int)
-        st.write("H3解像度: ", h3.get_resolution(h3_index))
-        st.write("再変換: ", hex_num[2:])
+        # H3関数で str → int 変換する場合
+        h3_int = h3.str_to_int(h3_index)
 
-    st.divider()
+        # H3関数で int → str 変換する場合
+        h3_str = h3.int_to_str(h3_int)
 
-    st.write("H3関数を使った変換")
+        # int関数を使って str → int 変換する場合
+        num_int: int = int(h3_index, 16)
 
-    # H3関数でstr → int変換
-    h = h3.str_to_int(h3_index)
-    st.write(h)
+        # hex関数を使って int → str 変換する場合
+        num_hex: str = hex(num_int)
 
-    # H3関数でint → str変換
-    h = h3.int_to_str(h)
-    st.write(h)
+        # 結果を表示
+        with st.container(border=True):
+            st.write(
+                "H3 インデックス (str):",
+                h3_index,
+            )
+
+            st.write(
+                "str から int の変換で比較:",
+                h3_int,
+                num_int,
+                h3_int == num_int,
+            )
+
+            st.write(
+                "int から str の変換で比較:",
+                h3_str,
+                num_hex,
+                h3_str == num_hex,
+            )
+
+            st.info("hex関数で変換した場合は、プレフィックスを取り除くと一致する")
+
+            st.write(
+                h3_str,
+                num_hex[2:],
+                h3_str == num_hex[2:],
+            )
 
 
-user_input()
+if __name__ == "__main__":
+    main()
