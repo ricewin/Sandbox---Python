@@ -44,8 +44,8 @@ def main() -> None:
             st.write(built_int)
 
             # hex関数を使って int → str 変換する場合
-            built_hex: str = hex(built_int)
-            st.write(built_hex)
+            built_str: str = hex(built_int)
+            st.write(built_str)
 
         # 結果を表示
         with st.container(border=True):
@@ -57,14 +57,14 @@ def main() -> None:
 
             st.write(
                 "int から str の変換で比較:",
-                h3_str == built_hex,
+                h3_str == built_str,
             )
 
             st.info("hex 関数で変換したときは、プレフィックスを取り除くと一致する")
 
             st.write(
                 "“0x” を削除して比較:",
-                h3_str == built_hex[2:],
+                h3_str == built_str[2:],
             )
 
 
