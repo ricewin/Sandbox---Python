@@ -60,7 +60,7 @@ def main() -> None:
                 h3_str == built_hex,
             )
 
-            st.info("hex関数で変換したときは、プレフィックスを取り除くと一致する")
+            st.info("hex 関数で変換したときは、プレフィックスを取り除くと一致する")
 
             st.write(
                 "“0x” を削除して比較:",
